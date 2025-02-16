@@ -1,8 +1,9 @@
 // App.js
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedSport, setSelectedSport] = useState('');
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -10,6 +11,10 @@ function App() {
 
   const handleCloseModal = () => {
     setShowLoginModal(false);
+  };
+
+  const handleSportChange = (e) => {
+    setSelectedSport(e.target.value); 
   };
 
   return (
@@ -37,11 +42,33 @@ function App() {
         ></iframe>
       </div>
 
+      {/* 3) Drop down menu */}
+      <div style={{ marginTop: '20px' }}>
+          <label htmlFor="sports-dropdown" style={styles.label}>
+            Choose a Sport:
+          </label>
+          <select
+            id="sports-dropdown"
+            value={selectedSport}
+            onChange={handleSportChange}
+            style={styles.select}
+          >
+            <option value="">Select Sport</option>
+            <option value="Basketball">Basketball</option>
+            <option value="Soccer">Soccer</option>
+            <option value="Tennis">Tennis</option>
+            <option value="Baseball">Baseball</option>
+            <option value="Football">Football</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Climbing">Climbing</option>
+          </select>
+          {selectedSport && <p style={styles.selectedSport}>You selected: {selectedSport}</p>}
+        </div>
       </div>
 
-      {/* 3) Conditionally render the Login Modal */}
+      {/* 4) Conditionally render the Login Modal */}
       {showLoginModal && <LoginModal onClose={handleCloseModal} />}
-    </div>
+      </div>
   );
 }
 
