@@ -1,3 +1,5 @@
+package com.mljsphack.mljsphack.Entity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,4 +70,6 @@ public class Mjlsp {
 
     @Column(name = "attendees")
     private int attendees;
+
+
 }

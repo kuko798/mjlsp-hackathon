@@ -1,5 +1,8 @@
-import com.Example.mljsphack.mljsphack.Entity.Mjlsp;
-import com.Example.mljsphack.mljsphack.Service.MjlspService;
+package com.mljsphack.mljsphack.Controller;
+
+import com.mljsphack.mljsphack.Service.MjlspService;
+
+import com.mljsphack.mljsphack.Entity.Mjlsp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class MjlspController {
 
     @Autowired // Dependency Injection
-    private MjlspService mjlspService;
+    private com.mljsphack.mljsphack.Entity.Mjlsp mjlspService;
 
     // Different ways to get input from controller:
     // @RequestBody - request payload
@@ -17,12 +20,12 @@ public class MjlspController {
     @PostMapping("/add/{event}") // entire URI is https://localhost:8080/api/add
     public Mjlsp addEvent(@RequestBody Mjlsp newEvent, @RequestParam("event") String event,
                           @PathVariable("event") int eventId) {
-        return mjlspService.addNewEvent(newEvent, breed, eventId);
+        return null;
     }
 
     @GetMapping("/retrieveMjlsp/{name}")
     public Mjlsp getMjlsp(@PathVariable("name") String name) {
-        return mjlspService.getEvent(name);
+        return mjlspService.getTitle(name);
     }
 
     //@DeleteMapping

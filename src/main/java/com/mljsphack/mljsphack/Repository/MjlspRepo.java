@@ -1,6 +1,6 @@
-package com.Example.demo.Repository;
+package com.mljsphack.mljsphack.Repository;
 
-import com.Example.mljsphack.mljsphack.Entity.Mjslp;
+import com.mljsphack.mljsphack.Entity.Mjlsp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

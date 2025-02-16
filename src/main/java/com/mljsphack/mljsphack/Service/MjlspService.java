@@ -1,11 +1,17 @@
-package com.Example.m.Service;
+package com.mljsphack.mljsphack.Service;
 
 
-import com.Example.mljsphack.mljsphack.Entity.Mjlsp;
-import com.Example.mljsphack.mljsphack.Repository.MjlspRepo;
+import com.mljsphack.mljsphack.Entity.Mjlsp;
+import com.mljsphack.mljsphack.Repository.MjlspRepo;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 
 @Service
@@ -17,17 +23,18 @@ public class MjlspService{
     @Autowired
     private MjlspRepo mjlspRepo;
 
-    private final String getAPICall = "https://example.com/api/user/";
+    private final String getAPICall = "https://uwmadison.emscloudservice.com/web/AnonymousServersApi.aspx/CustomBrowseEvents";
 
 
     public Mjlsp getEvent(String name){
         return mjlspRepo.findByName(name);
     }
 
-    public String fetchExternalData(String jwt, String username) {
+    public String fetchExternalData(String username) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + jwt);
+        headers.set("Authorization", "Bearer ");
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        Htt
 
         String getURL = getAPICall + username;
 
