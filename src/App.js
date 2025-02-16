@@ -1,9 +1,19 @@
-// App.js
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react';
+import { auth, GoogleAuthProvider, signInWithPopup, signOut } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedSports, setSelectedSports] = useState([]);
+  const [user, setUser] = useState(null); // Track the authenticated user
+
+  // Listen for authentication state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser); // Set user when the authentication state changes
+    });
+    return unsubscribe; // Cleanup the listener on component unmount
+  }, []);
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -23,15 +33,42 @@ function App() {
     );
   };
 
+  // Firebase Google Login method
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      setShowLoginModal(false);  // Close modal after login
+    } catch (error) {
+      console.error("Error during login: ", error.message);
+    }
+  };
+
+  // Firebase Sign-out method
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error during sign out: ", error.message);
+    }
+  };
+
   return (
     <div>
       {/* 1) Navigation Bar */}
       <nav style={styles.navbar}>
         <div style={styles.logo}>RecSearch 🤾‍♂️</div>
         <div>
-          <button style={styles.navButton} onClick={handleLoginClick}>
-            Login
-          </button>
+          {/* Display the appropriate button based on user authentication status */}
+          {user ? (
+            <button style={styles.navButton} onClick={handleSignOut}>
+              Sign Out
+            </button>
+          ) : (
+            <button style={styles.navButton} onClick={handleLoginClick}>
+              Login
+            </button>
+          )}
         </div>
       </nav>
 
@@ -51,76 +88,78 @@ function App() {
         {/* 3) Sidebar with Checkboxes */}
         <div style={styles.sidebar}>
           <h3>Choose Sports:</h3>
-          <label>
-            <input
-              type="checkbox"
-              value="Basketball"
-              checked={selectedSports.includes('Basketball')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Basketball
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Soccer"
-              checked={selectedSports.includes('Soccer')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Soccer
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Tennis"
-              checked={selectedSports.includes('Tennis')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Tennis
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Baseball"
-              checked={selectedSports.includes('Baseball')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Baseball
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Football"
-              checked={selectedSports.includes('Football')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Football
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Volleyball"
-              checked={selectedSports.includes('Volleyball')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Volleyball
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              value="Climbing"
-              checked={selectedSports.includes('Climbing')}
-              onChange={handleSportChange}
-              style={styles.checkbox}
-            />
-            Climbing
-          </label>
+          <div style={styles.sidebarContent}>
+            <label>
+              <input
+                type="checkbox"
+                value="Basketball"
+                checked={selectedSports.includes('Basketball')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Basketball
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Soccer"
+                checked={selectedSports.includes('Soccer')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Soccer
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Tennis"
+                checked={selectedSports.includes('Tennis')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Tennis
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Baseball"
+                checked={selectedSports.includes('Baseball')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Baseball
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Football"
+                checked={selectedSports.includes('Football')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Football
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Volleyball"
+                checked={selectedSports.includes('Volleyball')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Volleyball
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="Climbing"
+                checked={selectedSports.includes('Climbing')}
+                onChange={handleSportChange}
+                style={styles.checkbox}
+              />
+              Climbing
+            </label>
+          </div>
         </div>
 
         {/* Display selected sports */}
@@ -137,85 +176,37 @@ function App() {
       </div>
 
       {/* 4) Conditionally render the Login Modal */}
-      {showLoginModal && <LoginModal onClose={handleCloseModal} />}
+      {showLoginModal && !user && (
+        <LoginModal onClose={handleCloseModal} handleGoogleLogin={handleGoogleLogin} />
+      )}
     </div>
   );
 }
 
 /* --------------------------------------------- */
-/* Login Modal Component
-   Renders the backdrop + modal content         */
+/* Login Modal Component                        */
 /* --------------------------------------------- */
-function LoginModal({ onClose }) {
+function LoginModal({ onClose, handleGoogleLogin }) {
   return (
     <div style={styles.modalBackdrop}>
       <div style={styles.modalContent}>
         <button style={styles.closeButton} onClick={onClose}>
           ✕
         </button>
-        <LoginForm />
+        <div style={styles.loginForm}>
+          <button
+            style={styles.submitButton}
+            onClick={handleGoogleLogin}
+          >
+            Login with Google
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-/* --------------------------------------------- */
-/* Login Form Component
-   Simple username/password with local validation*/
-/* --------------------------------------------- */
-function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!username || !password) {
-      setMessage('Please fill in both fields.');
-      return;
-    }
-
-    // Dummy check
-    if (username === 'user' && password === 'password') {
-      setMessage('Login successful! 🎉');
-    } else {
-      setMessage('Invalid username or password. 🔑');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} style={styles.loginForm}>
-      <h2 style={{ textAlign: 'center' }}>Login</h2>
-      <label>
-        Username:
-        <input
-          style={styles.input}
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter your username"
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          style={styles.input}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
-        />
-      </label>
-      <button type="submit" style={styles.submitButton}>Log In</button>
-      {message && <p style={styles.message}>{message}</p>}
-    </form>
-  );
-}
-
-/* --------------------------------------------- */
-/* Inline Styles (for demo purposes)            */
-/* --------------------------------------------- */
+/* Inline Styles */
 const styles = {
   navbar: {
     display: 'flex',
@@ -237,9 +228,15 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
   },
-  content: {
-    padding: '2rem',
-    textAlign: 'center',
+  submitButton: {
+    marginTop: '1rem',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    padding: '0.75rem',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
   },
   modalBackdrop: {
     position: 'fixed',
@@ -270,33 +267,6 @@ const styles = {
     fontSize: '1.25rem',
     cursor: 'pointer',
   },
-  loginForm: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.75rem',
-  },
-  input: {
-    display: 'block',
-    width: '100%',
-    marginTop: '0.25rem',
-    padding: '0.5rem',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  submitButton: {
-    marginTop: '1rem',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    padding: '0.75rem',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-  },
-  message: {
-    marginTop: '0.5rem',
-    textAlign: 'center',
-  },
   sidebar: {
     width: '200px',
     position: 'fixed',
@@ -309,6 +279,12 @@ const styles = {
     boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
     overflowY: 'auto',
   },
+  sidebarContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start', // Align items to the start of the sidebar
+    gap: '15px', // Add space between checkboxes
+  },
   checkbox: {
     marginRight: '10px',
   },
@@ -316,12 +292,6 @@ const styles = {
     marginTop: '20px',
     textAlign: 'left',
     padding: '0 20px',
-  },
-  sidebarContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start', // Align items to the start of the sidebar
-    gap: '15px', // Add space between checkboxes
   },
 };
 
