@@ -1,8 +1,9 @@
 // App.js
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 
 function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedSports, setSelectedSports] = useState([]);
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -10,6 +11,16 @@ function App() {
 
   const handleCloseModal = () => {
     setShowLoginModal(false);
+  };
+
+  // Handle the change for each checkbox
+  const handleSportChange = (e) => {
+    const sport = e.target.value;
+    setSelectedSports((prevSelectedSports) => 
+      prevSelectedSports.includes(sport)
+        ? prevSelectedSports.filter(s => s !== sport)  // If it's already selected, remove it
+        : [...prevSelectedSports, sport]  // Otherwise, add it to the list
+    );
   };
 
   return (
@@ -24,22 +35,108 @@ function App() {
         </div>
       </nav>
 
-      {/* 2) Main Content (da map) */}
+      {/* 2) Main Content */}
       <div className="App" style={{ textAlign: 'center', marginTop: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-        <iframe
-          src="https://www.google.com/maps/d/u/1/embed?mid=1iJryewAkJ6kcrgQwz5wP4f00yoBw_Lc&ehbc=2E312F&noprof=1"
-          width="1000"
-          height="800"
-          style={{ border: 'none', borderRadius: '10px' }}
-          allowFullScreen
-          title="RecSearch"
-        ></iframe>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <iframe
+            src="https://www.google.com/maps/d/u/1/embed?mid=1iJryewAkJ6kcrgQwz5wP4f00yoBw_Lc&ehbc=2E312F&noprof=1"
+            width="1000"
+            height="800"
+            style={{ border: 'none', borderRadius: '10px' }}
+            allowFullScreen
+            title="RecSearch"
+          ></iframe>
+        </div>
+
+        {/* 3) Sidebar with Checkboxes */}
+        <div style={styles.sidebar}>
+          <h3>Choose Sports:</h3>
+          <label>
+            <input
+              type="checkbox"
+              value="Basketball"
+              checked={selectedSports.includes('Basketball')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Basketball
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Soccer"
+              checked={selectedSports.includes('Soccer')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Soccer
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Tennis"
+              checked={selectedSports.includes('Tennis')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Tennis
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Baseball"
+              checked={selectedSports.includes('Baseball')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Baseball
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Football"
+              checked={selectedSports.includes('Football')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Football
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Volleyball"
+              checked={selectedSports.includes('Volleyball')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Volleyball
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              value="Climbing"
+              checked={selectedSports.includes('Climbing')}
+              onChange={handleSportChange}
+              style={styles.checkbox}
+            />
+            Climbing
+          </label>
+        </div>
+
+        {/* Display selected sports */}
+        {selectedSports.length > 0 && (
+          <div style={styles.selectedSports}>
+            <h3>Selected Sports:</h3>
+            <ul>
+              {selectedSports.map((sport, index) => (
+                <li key={index}>{sport}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
-      </div>
-
-      {/* 3) Conditionally render the Login Modal */}
+      {/* 4) Conditionally render the Login Modal */}
       {showLoginModal && <LoginModal onClose={handleCloseModal} />}
     </div>
   );
@@ -199,6 +296,32 @@ const styles = {
   message: {
     marginTop: '0.5rem',
     textAlign: 'center',
+  },
+  sidebar: {
+    width: '200px',
+    position: 'fixed',
+    left: '0',
+    top: '0',
+    bottom: '0',
+    padding: '1rem',
+    backgroundColor: '#f5f5f5',
+    borderRight: '2px solid #ccc',
+    boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
+    overflowY: 'auto',
+  },
+  checkbox: {
+    marginRight: '10px',
+  },
+  selectedSports: {
+    marginTop: '20px',
+    textAlign: 'left',
+    padding: '0 20px',
+  },
+  sidebarContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start', // Align items to the start of the sidebar
+    gap: '15px', // Add space between checkboxes
   },
 };
 
